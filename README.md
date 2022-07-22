@@ -23,3 +23,24 @@ docker-compose down
 # show logs
 docker-compose logs -f --tail 10
 ```
+
+## Create an empty DB
+
+The loader scripts above will create a populated `ASRMAdmin` db.
+Use your tool of choice to generate an `EmptyASRMAdmin` db in the same cluster.
+
+## Configure the connections
+
+The `basemodel.py` will contain a reflected/automapped base class. 
+This will read all the data it can from the connection string and use it to generate
+SQLAlchemy models. Make sure `alembic/env.py` uses `target_metadata = Base.metadata` 
+that references this reflected/automapped base.
+
+Once that's done the `alembic.ini` should contain the SQLAlchemy URL but should point
+to the `EmptyASRMAdmin` db.
+
+## Generate the migrations
+
+At this point running `alembic revision --autogenerate` will generate a single migration.
+It takes the connection to the `ASRMAdmin` db and generates the SQLAlchemy to make the `EmptyASRMAdmin` db
+schema match. Cleanup as needed.
